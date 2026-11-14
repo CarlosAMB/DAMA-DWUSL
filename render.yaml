@@ -7,8 +7,8 @@ services:
     runtime: docker
     plan: free
     rootDir: EasyLifeWeb
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    dockerfilePath: ./EasyLifeWeb/Dockerfile
+    dockerContext: ./EasyLifeWeb
     healthCheckPath: /up
     envVars:
       - key: APP_NAME
