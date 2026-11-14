@@ -1,0 +1,24 @@
+# ---- Credenciales: NUNCA subir ----
+client_secret_*.json
+*-firebase-adminsdk-*.json
+firebase-credentials.json
+google-services.json
+GoogleService-Info.plist
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+
+# ---- Proyectos base de referencia (no son parte de la entrega) ----
+MiPrimeraApp/
+SistemaClinicaPediatrica/
+
+# ---- Herramientas locales ----
+.claude/
+.vscode/
+.idea/
+*.log
+Thumbs.db
+.DS_Store
+EasyLifeMovil/expo-qr.png
