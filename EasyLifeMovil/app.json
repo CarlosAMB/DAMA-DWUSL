@@ -13,7 +13,6 @@
     },
     "android": {
       "package": "com.easylife.app",
-      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#4F46E5",
         "foregroundImage": "./assets/android-icon-foreground.png",

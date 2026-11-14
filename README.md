@@ -188,3 +188,24 @@ Las cuentas creadas antes de Firebase (ej. `demo@easylife.test`) se vinculan sol
    ```
    Luego `php artisan config:clear` y, si ya había usuarios vinculados, `php artisan firebase:mirror`.
 6. Para el APK (push): *Tus apps* → **App Android** con el paquete de la app → descargar `google-services.json` a `EasyLifeMovil/`.
+
+## 10. Despliegue en Render
+
+El repositorio incluye `render.yaml` (Blueprint) y `EasyLifeWeb/Dockerfile` (Apache + PHP 8.4). En Render la base de datos es **PostgreSQL**; el código es compatible con MySQL y PostgreSQL.
+
+1. Subir el repositorio a GitHub.
+2. En https://dashboard.render.com → **New → Blueprint** → elegir el repositorio. Render crea el servicio web `easylife` y la base `easylife-db`.
+3. Llenar las variables marcadas como secretas:
+   | Variable | Valor |
+   |---|---|
+   | `APP_KEY` | resultado de `php artisan key:generate --show` |
+   | `APP_URL` | `https://<tu-servicio>.onrender.com` |
+   | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | los mismos del `.env` local |
+   | `GOOGLE_REDIRECT_URI` | `https://<tu-servicio>.onrender.com/google/callback` |
+   | `FIREBASE_PROJECT_ID` | id del proyecto de Firebase |
+   | `FIREBASE_CREDENTIALS` | el JSON de la cuenta de servicio **en base64** (`base64 -w0 archivo.json`) |
+4. En Google Cloud Console → Credenciales → cliente OAuth → agregar la URI de redirección de Render.
+5. Al arrancar, el contenedor aplica las migraciones y, si la base está vacía, carga los datos iniciales (admin y demo).
+6. Compilar el APK con `EXPO_PUBLIC_API_URL=https://<tu-servicio>.onrender.com` en `EasyLifeMovil/.env`.
+
+> Plan gratis: el servicio se duerme tras 15 min sin uso (tarda ~1 min en despertar) y la base PostgreSQL gratuita vence a los 30 días.
