@@ -40,6 +40,12 @@
       ],
       "expo-font",
       "expo-web-browser"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "85f52afd-e355-4037-bac3-c4d279491bbf"
+      }
+    },
+    "owner": "charlyamb"
   }
 }
