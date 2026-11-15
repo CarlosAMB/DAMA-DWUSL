@@ -119,7 +119,8 @@ export default function CalendarScreen({ navigation }) {
   const openEvent = (e) => navigation.navigate('EventDetail', { id: e.id });
   const openTask = (t) => navigation.navigate('TaskDetail', { id: t.id });
 
-  const DayList = ({ day }) => {
+  // Funcion que dibuja las actividades de un dia (no es un componente: evita recrearlo en cada render)
+  const renderDay = (day) => {
     const items = byDay[dayKey(day)] || { events: [], tasks: [] };
     if (!items.events.length && !items.tasks.length) {
       return <EmptyState icon="calendar-blank-outline" title="Sin actividades" subtitle="Toca + para crear un evento." />;
@@ -169,7 +170,7 @@ export default function CalendarScreen({ navigation }) {
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 4, paddingBottom: 100 }}>
         {/* ----------- DIA ----------- */}
-        {view === 'day' && <DayList day={date} />}
+        {view === 'day' && renderDay(date)}
 
         {/* ----------- SEMANA ----------- */}
         {view === 'week' &&
@@ -263,7 +264,7 @@ export default function CalendarScreen({ navigation }) {
               style={{ borderRadius: 14, borderWidth: 1, borderColor: colors.border, paddingBottom: 8, marginBottom: 14 }}
             />
             <Text style={[styles.dayTitle, { color: colors.text }]}>{formatLongDate(date)}</Text>
-            <DayList day={date} />
+            {renderDay(date)}
           </>
         )}
 

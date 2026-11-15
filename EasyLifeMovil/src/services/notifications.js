@@ -31,10 +31,11 @@ export async function setupNotifications() {
     try {
       await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
         name: 'Recordatorios',
+        // eslint-disable-next-line import/namespace -- AndroidImportance si existe en expo-notifications (falso positivo)
         importance: Notifications.AndroidImportance.HIGH,
       });
       channelReady = true;
-    } catch (e) {
+    } catch {
       channelReady = false;
       console.log('Canal de notificaciones no disponible, se usa el canal por defecto');
     }

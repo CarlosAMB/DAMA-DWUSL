@@ -7,7 +7,8 @@ export const TOKEN_KEY = 'easylife_token';
 /** Cliente HTTP para la API Laravel. Agrega el token Sanctum en cada peticion. */
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 15000,
+  // 60 s: el servidor gratuito de Render se duerme tras 15 min sin uso y tarda ~1 min en despertar
+  timeout: 60000,
   headers: { Accept: 'application/json' },
 });
 
@@ -39,6 +40,7 @@ export function errorMessage(error) {
   if (!error.response) {
     // Errores que no son de red (ej. SQLite) se muestran tal cual
     if (!error.isAxiosError) return error.message || 'Ocurrió un error inesperado.';
+    if (error.code === 'ECONNABORTED') return 'El servidor está iniciando (puede tardar hasta 1 minuto). Inténtalo de nuevo.';
     return 'No se pudo conectar con el servidor. Revisa tu conexión a internet.';
   }
   const data = error.response.data;

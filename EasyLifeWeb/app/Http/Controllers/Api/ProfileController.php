@@ -31,6 +31,7 @@ class ProfileController extends Controller
             'google_email' => $user->google_email,
             'google_synced_at' => $user->google_synced_at,
             'firebase_uid' => $user->firebase_uid,
+            'firestore_collection' => FirestoreMirror::collection(),
             'created_at' => $user->created_at,
         ];
     }

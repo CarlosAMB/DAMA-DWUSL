@@ -1,17 +1,15 @@
 rules_version = '2';
 
 // Reglas de seguridad de Cloud Firestore para EasyLife.
-// - Cada usuario solo puede LEER su propia carpeta users/{uid}/... (uid de Firebase Authentication).
+// - Cada usuario solo puede LEER su propia carpeta {coleccion}/{uid}/... (uid de Firebase Authentication).
+//   "users" es la del servidor en linea (Render); "dev_users" la del servidor local de desarrollo.
 // - Nadie escribe desde la app: el servidor Laravel escribe con la cuenta de servicio (que no pasa por estas reglas).
 // - Todo lo demas queda bloqueado.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/{document=**} {
-      allow read: if request.auth != null && request.auth.uid == uid;
+    match /{root}/{uid}/{document=**} {
+      allow read: if root in ['users', 'dev_users'] && request.auth != null && request.auth.uid == uid;
       allow write: if false;
-    }
-    match /{document=**} {
-      allow read, write: if false;
     }
   }
 }

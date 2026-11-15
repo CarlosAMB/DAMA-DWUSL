@@ -40,6 +40,8 @@ return [
     'firebase' => [
         'project_id' => env('FIREBASE_PROJECT_ID'),
         'credentials' => env('FIREBASE_CREDENTIALS'),
+        // Coleccion de Firestore: "users" en produccion, "dev_users" en local (no mezclar datos de dos servidores)
+        'collection' => env('FIREBASE_COLLECTION', 'users'),
     ],
 
     'slack' => [

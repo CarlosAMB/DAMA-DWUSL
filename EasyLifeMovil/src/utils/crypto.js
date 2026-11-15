@@ -14,6 +14,8 @@ import * as SecureStore from 'expo-secure-store';
  * Formato: "ev1:" + base64(iv) + ":" + base64(texto cifrado) + ":" + base64(hmac)
  */
 export const PREFIX = 'ev1:';
+/** Lo que devuelve decryptField cuando no puede descifrar (llave distinta o dato alterado). */
+export const LOCKED = '🔒';
 const KEY_STORE = 'easylife_data_key';
 
 let encKey = null;
@@ -63,15 +65,15 @@ export function encryptField(plain) {
 
 export function decryptField(value) {
   if (typeof value !== 'string' || !value.startsWith(PREFIX)) return value;
-  if (!encKey) return '🔒';
+  if (!encKey) return LOCKED;
   try {
     const [iv, cipher, mac] = value.slice(PREFIX.length).split(':').map((p) => CryptoJS.enc.Base64.parse(p));
     const expected = CryptoJS.HmacSHA256(iv.clone().concat(cipher), macKey);
-    if (CryptoJS.enc.Base64.stringify(expected) !== CryptoJS.enc.Base64.stringify(mac)) return '🔒';
+    if (CryptoJS.enc.Base64.stringify(expected) !== CryptoJS.enc.Base64.stringify(mac)) return LOCKED;
     return CryptoJS.AES.decrypt({ ciphertext: cipher }, encKey, { iv, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 }).toString(
       CryptoJS.enc.Utf8
     );
   } catch {
-    return '🔒';
+    return LOCKED;
   }
 }

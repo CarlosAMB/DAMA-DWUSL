@@ -19,7 +19,7 @@ const SUMMARY_TIMES = ['06:00', '07:00', '08:00', '09:00', '20:00', '21:00'];
 /** Preferencias de organizacion (se guardan en el servidor y se aplican en la app). */
 export default function PreferencesScreen() {
   const db = useSQLiteContext();
-  const { user, updateProfile, setUser, errorMessage } = useAuth();
+  const { user, updateProfile, setUser } = useAuth();
   const { colors } = useTheme();
   const [prefs, setPrefs] = useState({ ...user.preferences });
   const [saving, setSaving] = useState(false);
@@ -30,7 +30,7 @@ export default function PreferencesScreen() {
     try {
       await updateProfile({ preferences: prefs });
       Alert.alert('Preferencias guardadas');
-    } catch (e) {
+    } catch {
       // Sin conexion: se aplican localmente y se envian en la proxima sincronizacion
       await setUser({ ...user, preferences: prefs });
       await setMeta(db, 'pending_preferences', JSON.stringify(prefs));

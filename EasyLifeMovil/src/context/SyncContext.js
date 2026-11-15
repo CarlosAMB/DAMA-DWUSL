@@ -33,7 +33,9 @@ export const SyncProvider = ({ children }) => {
   const running = useRef(false);
   const debounce = useRef(null);
   const prefsRef = useRef({});
-  prefsRef.current = user?.preferences || {};
+  useEffect(() => {
+    prefsRef.current = user?.preferences || {};
+  }, [user?.preferences]);
 
   const refreshStatus = useCallback(async () => {
     setPending(await countPendingChanges(db));
@@ -110,7 +112,7 @@ export const SyncProvider = ({ children }) => {
         } catch (e) {
           console.warn('[firestore] no se pudo aplicar:', e.message);
         }
-      });
+      }, user.firestore_collection || 'users');
     });
 
     return () => {
@@ -119,11 +121,13 @@ export const SyncProvider = ({ children }) => {
       unsubData();
       setRealtime(false);
     };
-  }, [db, user?.firebase_uid, refreshStatus]);
+  }, [db, user?.firebase_uid, user?.firestore_collection, refreshStatus]);
 
   // Sincroniza al iniciar sesion, al recuperar internet, al volver a la app y cada X minutos
   useEffect(() => {
     if (!user) return undefined;
+    // Lee el estado guardado en SQLite (sistema externo); el setState ocurre despues del await
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refreshStatus();
     syncNow();
 

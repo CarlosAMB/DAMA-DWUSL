@@ -10,7 +10,11 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Espejo en tiempo real de los datos de cada usuario en Cloud Firestore.
  *
- *   users/{firebase_uid}/{projects|tags|events|tasks|subtasks|reminders}/{id}
+ *   {coleccion}/{firebase_uid}/{projects|tags|events|tasks|subtasks|reminders}/{id}
+ *
+ * {coleccion} es "users" en produccion y otra (ej. "dev_users") en desarrollo local
+ * (FIREBASE_COLLECTION): cada servidor tiene su propia base y su propia llave por usuario,
+ * asi que no deben mezclar sus datos en Firestore aunque compartan el proyecto de Firebase.
  *
  * - Laravel sigue siendo la fuente principal (panel admin, Google, reportes).
  * - Cada vez que un registro cambia (desde la app, la API, Google o una importacion) se encola aqui
@@ -34,6 +38,14 @@ class FirestoreMirror
     private bool $flushScheduled = false;
 
     public function __construct(private FirebaseClient $firebase) {}
+
+    /** Coleccion raiz de este servidor en Firestore (la app la recibe en el perfil del usuario). */
+    public static function collection(): string
+    {
+        $name = (string) config('services.firebase.collection', 'users');
+
+        return preg_match('/^[a-z_]{1,40}$/', $name) ? $name : 'users';
+    }
 
     public function enabled(): bool
     {
@@ -128,7 +140,7 @@ class FirestoreMirror
         foreach (array_keys(SyncService::TABLES) as $table) {
             $pageToken = null;
             do {
-                $response = $this->firebase->http()->get($this->baseUrl()."/users/{$firebaseUid}/{$table}", array_filter([
+                $response = $this->firebase->http()->get($this->baseUrl()."/".self::collection()."/{$firebaseUid}/{$table}", array_filter([
                     'pageSize' => 300,
                     'mask.fieldPaths' => 'id',
                     'pageToken' => $pageToken,
@@ -154,7 +166,7 @@ class FirestoreMirror
         }
 
         return [
-            'name' => $this->documentPrefix()."/users/{$user->firebase_uid}/{$table}/{$model->getKey()}",
+            'name' => $this->documentPrefix()."/".self::collection()."/{$user->firebase_uid}/{$table}/{$model->getKey()}",
             'fields' => $this->encodeFields($data),
         ];
     }

@@ -18,10 +18,19 @@ export function useLocalQuery(queryFn, deps = [], initial = null) {
   const [loading, setLoading] = useState(true);
   const requestId = useRef(0);
 
+  // Siempre se usa la version mas reciente de la consulta
+  const queryRef = useRef(queryFn);
+  useEffect(() => {
+    queryRef.current = queryFn;
+  });
+
+  // Las dependencias se comparan por valor (son filtros simples: textos, numeros, ids)
+  const depsKey = JSON.stringify(deps);
+
   const load = useCallback(async () => {
     const id = ++requestId.current;
     try {
-      const result = await queryFn(db);
+      const result = await queryRef.current(db);
       // Si mientras tanto se lanzo otra consulta, esta respuesta ya es vieja
       if (id === requestId.current) setData(result);
     } catch (e) {
@@ -29,8 +38,9 @@ export function useLocalQuery(queryFn, deps = [], initial = null) {
     } finally {
       if (id === requestId.current) setLoading(false);
     }
+    // depsKey y version provocan una nueva consulta cuando cambian los filtros o los datos
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [db, version, ...deps]);
+  }, [db, version, depsKey]);
 
   // Recarga cuando cambian los datos o los filtros
   useEffect(() => {

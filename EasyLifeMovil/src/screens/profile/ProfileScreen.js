@@ -7,7 +7,7 @@ import { Card, Row } from '../../components/ui';
 import { formatDateTime } from '../../utils/dates';
 
 export default function ProfileScreen({ navigation }) {
-  const { user, logout, updateProfile, errorMessage } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const { colors, darkMode, setTheme } = useTheme();
   const { lastSync, pending, isOnline, syncNow, syncing, lastError } = useSync();
 

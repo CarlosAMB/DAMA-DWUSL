@@ -14,7 +14,7 @@ import {
 } from 'firebase/auth';
 import { collection, initializeFirestore, onSnapshot, query, where } from 'firebase/firestore';
 import { FIREBASE_CONFIG, FIREBASE_ENABLED } from '../config';
-import { decryptField } from '../utils/crypto';
+import { LOCKED, decryptField } from '../utils/crypto';
 
 /**
  * Firebase en la app:
@@ -88,12 +88,13 @@ const TABLES = ['projects', 'tags', 'events', 'tasks', 'subtasks', 'reminders'];
  * @param {string} uid  uid de Firebase
  * @param {string|null} since  ISO de la ultima sincronizacion con Laravel
  * @param {(table: string, records: object[]) => void} onChanges
+ * @param {string} root  coleccion raiz que indica el servidor ("users" en produccion)
  * @returns {() => void} funcion para dejar de escuchar
  */
-export function subscribeToUserData(uid, since, onChanges) {
+export function subscribeToUserData(uid, since, onChanges, root = 'users') {
   if (!firestore || !uid) return () => {};
   const unsubs = TABLES.map((table) => {
-    const ref = collection(firestore, 'users', uid, table);
+    const ref = collection(firestore, root, uid, table);
     const q = since ? query(ref, where('updated_at', '>', since)) : ref;
     return onSnapshot(
       q,
@@ -104,11 +105,17 @@ export function subscribeToUserData(uid, since, onChanges) {
           .filter((c) => c.type !== 'removed' && !c.doc.metadata.hasPendingWrites)
           .map((c) => {
             const data = { ...c.doc.data() };
+            let readable = true;
             ENCRYPTED.forEach((f) => {
-              if (data[f]) data[f] = decryptField(data[f]);
+              if (data[f]) {
+                data[f] = decryptField(data[f]);
+                if (data[f] === LOCKED) readable = false;
+              }
             });
-            return data;
-          });
+            // Si no se pudo descifrar (otra llave), se ignora: nunca se guarda un dato ilegible
+            return readable ? data : null;
+          })
+          .filter(Boolean);
         if (records.length) onChanges(table, records);
       },
       (error) => console.warn(`[firestore] ${table}:`, error.code || error.message)

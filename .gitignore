@@ -22,3 +22,6 @@ SistemaClinicaPediatrica/
 Thumbs.db
 .DS_Store
 EasyLifeMovil/expo-qr.png
+
+# APK (se comparte aparte, pesa mucho para git)
+Entrega/*.apk

@@ -12,7 +12,6 @@ import {
   getEventsBetween,
   getProjects,
   getRemindersOf,
-  getSubtasks,
   getTags,
   getTask,
   saveRecord,
