@@ -186,6 +186,7 @@ Las cuentas creadas antes de Firebase (ej. `demo@easylife.test`) se vinculan sol
    FIREBASE_PROJECT_ID=tu-proyecto
    FIREBASE_CREDENTIALS=storage/app/firebase-credentials.json
    ```
+   En local agrega también `FIREBASE_COLLECTION=dev_users`, para que el servidor local no mezcle sus datos con los del servidor en línea (que usa `users`).
    Luego `php artisan config:clear` y, si ya había usuarios vinculados, `php artisan firebase:mirror`.
 6. Para el APK (push): *Tus apps* → **App Android** con el paquete de la app → descargar `google-services.json` a `EasyLifeMovil/`.
 
