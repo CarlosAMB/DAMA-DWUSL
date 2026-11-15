@@ -23,5 +23,6 @@ Thumbs.db
 .DS_Store
 EasyLifeMovil/expo-qr.png
 
-# APK (se comparte aparte, pesa mucho para git)
-Entrega/*.apk
+
+# Documento de referencia de otro proyecto (no es parte de EasyLife)
+Inventario_Farmaceutico.pdf
