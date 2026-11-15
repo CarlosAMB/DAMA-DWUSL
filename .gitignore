@@ -26,3 +26,6 @@ EasyLifeMovil/expo-qr.png
 
 # Documento de referencia de otro proyecto (no es parte de EasyLife)
 Inventario_Farmaceutico.pdf
+
+# Paquete para el equipo (contiene claves)
+*.rar
