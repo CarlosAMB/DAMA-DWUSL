@@ -29,10 +29,7 @@ class UserSeeder extends Seeder
             'preferences' => User::DEFAULT_PREFERENCES,
         ]);
 
-        // Usuarios adicionales para que el dashboard tenga datos
-        // (Faker solo existe en desarrollo; en el servidor de produccion se omiten)
-        if (class_exists(\Faker\Factory::class)) {
-            User::factory(8)->create();
-        }
+        // La actividad de demostracion (usuarios simulados y datos con fechas pasadas)
+        // se genera con: php artisan app:demo-history
     }
 }

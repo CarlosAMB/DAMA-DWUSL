@@ -28,4 +28,10 @@ php artisan view:cache
 php artisan migrate --force
 php artisan app:seed-if-empty
 
+# Historial de demostracion (actividad desde septiembre): solo si se activa en Render.
+# No duplica: si ya existe, el comando no hace nada.
+if [ "${SEED_DEMO_HISTORY:-false}" = "true" ]; then
+  php artisan app:demo-history
+fi
+
 exec apache2-foreground
