@@ -9,6 +9,8 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Mpdf\Mpdf;
+use Mpdf\Output\Destination;
 
 /** Reportes de uso de la plataforma por rango de fechas (datos agregados). */
 class ReportController extends Controller
@@ -52,6 +54,48 @@ class ReportController extends Controller
         return response(stream_get_contents($out), 200, [
             'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename=reporte_easylife_'.now()->format('Ymd').'.csv',
+        ]);
+    }
+
+    /** Descarga el reporte en PDF (mPDF): mismos datos y rango que la pantalla. */
+    public function pdf(Request $request)
+    {
+        $r = $this->build($request);
+
+        // Tareas creadas por semana (en el PDF se agrupan por semana para que quepan en una pagina)
+        $weekly = Task::whereBetween('created_at', [$r['from'], $r['to']])->get(['created_at'])
+            ->groupBy(fn ($t) => $t->created_at->copy()->startOfWeek()->format('Y-m-d'))
+            ->map->count()->sortKeys();
+        $weeks = collect();
+        for ($w = $r['from']->copy()->startOfWeek(); $w->lte($r['to']); $w->addWeek()) {
+            $weeks->push(['label' => $w->format('d/m').' – '.$w->copy()->endOfWeek()->format('d/m'), 'total' => $weekly[$w->format('Y-m-d')] ?? 0]);
+        }
+
+        $html = view('admin.reports.pdf', $r + [
+            'weeks' => $weeks,
+            'generatedBy' => $request->user()->name,
+            'generatedAt' => now()->timezone($request->user()->timezone ?: 'America/El_Salvador'),
+        ])->render();
+
+        $tmp = storage_path('app/mpdf');
+        if (! is_dir($tmp)) {
+            mkdir($tmp, 0775, true);
+        }
+
+        $mpdf = new Mpdf([
+            'format' => 'Letter',
+            'margin_left' => 15, 'margin_right' => 15, 'margin_top' => 15, 'margin_bottom' => 18,
+            'default_font' => 'dejavusans',
+            'tempDir' => $tmp,
+        ]);
+        $mpdf->SetTitle('Reporte EasyLife '.$r['from']->format('d/m/Y').' - '.$r['to']->format('d/m/Y'));
+        $mpdf->SetAuthor('EasyLife');
+        $mpdf->SetFooter('EasyLife · Reporte de uso||Página {PAGENO} de {nbpg}');
+        $mpdf->WriteHTML($html);
+
+        return response($mpdf->Output('', Destination::STRING_RETURN), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename=reporte_easylife_'.now()->format('Ymd').'.pdf',
         ]);
     }
 

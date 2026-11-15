@@ -22,8 +22,9 @@ RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
 FROM php:8.4-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq-dev libzip-dev libicu-dev unzip \
-    && docker-php-ext-install pdo_pgsql pdo_mysql zip intl bcmath opcache \
+    && apt-get install -y --no-install-recommends libpq-dev libzip-dev libicu-dev unzip libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_pgsql pdo_mysql zip intl bcmath opcache gd \
     && a2enmod rewrite headers \
     && rm -rf /var/lib/apt/lists/*
 

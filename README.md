@@ -91,7 +91,7 @@ npx expo start --android
 - **Usuarios**: búsqueda, filtros, crear, editar rol, activar/desactivar (cierra sus sesiones), eliminar.
 - **Tipos de evento**: catálogo con color e ícono que usa la app.
 - **Avisos**: mensajes con vigencia que aparecen en el inicio de la app.
-- **Reportes** por rango de fechas con exportación a CSV.
+- **Reportes** por rango de fechas con exportación a CSV y PDF (mPDF).
 - El administrador solo ve **datos agregados**, nunca el contenido de las tareas o eventos.
 
 ---

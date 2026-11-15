@@ -19,6 +19,9 @@
                 <a class="btn btn-outline-success" href="{{ route('admin.reports.export', ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')]) }}">
                     <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
                 </a>
+                <a class="btn btn-outline-danger" href="{{ route('admin.reports.pdf', ['from' => $from->format('Y-m-d'), 'to' => $to->format('Y-m-d')]) }}">
+                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                </a>
             </div>
         </form>
     </div>

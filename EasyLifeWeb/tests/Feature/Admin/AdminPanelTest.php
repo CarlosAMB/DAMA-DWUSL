@@ -39,6 +39,22 @@ class AdminPanelTest extends TestCase
         }
     }
 
+    public function test_admin_downloads_report_as_pdf(): void
+    {
+        $this->actingAs($this->admin());
+
+        $response = $this->get('/admin/reports/pdf?from=2026-09-01&to=2026-11-30')->assertOk();
+        $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('attachment; filename=reporte_easylife_', $response->headers->get('Content-Disposition'));
+        $this->assertStringStartsWith('%PDF-', $response->getContent());
+
+        // Rango invalido: se rechaza igual que en la pantalla
+        $this->get('/admin/reports/pdf?from=2026-11-30&to=2026-09-01')->assertSessionHasErrors('to');
+
+        // Un usuario normal no puede descargarlo
+        $this->actingAs(User::where('email', 'demo@easylife.test')->first())->get('/admin/reports/pdf')->assertForbidden();
+    }
+
     public function test_regular_user_cannot_access_panel(): void
     {
         $user = User::where('email', 'demo@easylife.test')->first();

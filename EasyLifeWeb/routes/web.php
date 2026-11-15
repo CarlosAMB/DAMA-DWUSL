@@ -42,4 +42,5 @@ Route::middleware(['auth', 'active', 'admin'])->prefix('admin')->name('admin.')-
     // :::::::::: REPORTES ::::::::::
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('reports/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
 });
