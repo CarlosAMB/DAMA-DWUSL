@@ -49,6 +49,7 @@ class FirebaseIntegrationTest extends TestCase
 
         config([
             'services.firebase.project_id' => self::PROJECT,
+            'services.firebase.collection' => 'users', // independiente del .env local (dev_users)
             'services.firebase.credentials' => json_encode([
                 'project_id' => self::PROJECT,
                 'client_email' => 'laravel@easylife-test.iam.gserviceaccount.com',
