@@ -149,7 +149,7 @@ La sincronización se dispara al abrir la app, al recuperar internet, 2 segundos
 
 **Configuración:**
 
-1. En Google Cloud Console: habilitar *Google Calendar API* y *Google Tasks API*, configurar la pantalla de consentimiento (External, modo prueba, agregar usuarios de prueba) y crear un cliente OAuth *Aplicación web* con la URI de redirección `http://localhost:8000/google/callback`.
+1. En Google Cloud Console: habilitar *Google Calendar API* y *Google Tasks API*, configurar la pantalla de consentimiento (External, publicada en producción) y crear un cliente OAuth *Aplicación web* con la URI de redirección `http://localhost:8000/google/callback`.
 2. En `EasyLifeWeb/.env`:
    ```env
    GOOGLE_CLIENT_ID=...apps.googleusercontent.com
@@ -160,7 +160,7 @@ La sincronización se dispara al abrir la app, al recuperar internet, 2 segundos
 3. Con el emulador encendido: `adb reverse tcp:8000 tcp:8000` (Google solo acepta `localhost`, no `10.0.2.2`).
 4. En la app: **Perfil → Integraciones → Conectar con Google**.
 
-> En modo prueba Google muestra "Google no ha verificado esta app" (pulsar *Continuar*) y el acceso vence a los 7 días; si pasa, la app pide reconectar.
+> La app está publicada "En producción": cualquier cuenta de Google puede conectarse (hasta 100 usuarios mientras Google no la verifique). Aparece "Google no ha verificado esta app": pulsar *Configuración avanzada → Ir a EasyLife*.
 
 ## 9. Firebase (Authentication, Firestore en tiempo real y notificaciones push)
 
